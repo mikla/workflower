@@ -1,24 +1,22 @@
 {
   "manifest_version": 2,
-
   "name": "Workflower",
   "description": "This extension allow you to save a page to the workflowy shared item.",
   "version": "1.0",
   "background": {
-  		"page": "main.html"
-  	},
-
-  "options_page": "options.html",
-
-  "page_action": {
-    "default_icon": "icon.png"    
+    "page": "main.html"
   },
-
+  "options_page": "options.html",
+  "page_action": {
+    "default_icon": "icon.png"
+  },
   "permissions": [
+    "notifications",
     "activeTab",
     "background",
     "declarativeContent",
     "storage",
-	"https://workflowy.com/push_and_poll"    
+    "https://workflowy.com/push_and_poll",
+    "http://fonts.googleapis.com/css"
   ]
 }

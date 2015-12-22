@@ -1,6 +1,3 @@
-  // Copyright (c) 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
 
 function getCurrentTabInfo(callback) {
   // Query filter to be passed to chrome.tabs.query - see
@@ -10,7 +7,7 @@ function getCurrentTabInfo(callback) {
     currentWindow: true
   };
 
-  chrome.tabs.query(queryInfo, function(tabs) {
+  chrome.tabs.query(queryInfo, function (tabs) {
     // chrome.tabs.query invokes the callback with a list of tabs that match the
     // query. When the popup is opened, there is certainly a window and at least
     // one tab, so we can safely assume that |tabs| is a non-empty array.
@@ -33,25 +30,40 @@ function getCurrentTabInfo(callback) {
   });
 }
 
-function sendData(data) {		  
+
+function showResult(text) {
+
+  var opt = {
+    type: "basic",
+    title: "Workflower",
+    message: "Added to WF",
+    priority: 0,
+    iconUrl: "icon.png"
+  };
+
+  chrome.notifications.create("wf_added_ntfn", opt);
+
+}
+
+function sendData(data) {
 
   var XHR = new XMLHttpRequest();
   var urlEncodedData = "";
   var urlEncodedDataPairs = [];
   var name;
 
-  for(name in data) {
+  for (name in data) {
     urlEncodedDataPairs.push(encodeURIComponent(name) + '=' + encodeURIComponent(data[name]));
   }
 
   urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
 
-  XHR.addEventListener('load', function(event) {
-    alert('url successfully added', 'success')
+  XHR.addEventListener('load', function (event) {
+    showResult('url successfully added')
   });
 
-  XHR.addEventListener('error', function(event) {
-    alert('error occured due add operation', 'error');
+  XHR.addEventListener('error', function (event) {
+    showResult('error occured due add operation')
   });
 
   XHR.open('POST', "https://workflowy.com/push_and_poll");
@@ -67,16 +79,15 @@ function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
 
-
 function generateGuid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
-    .toString(16)
-    .substring(1);
+      .toString(16)
+      .substring(1);
   }
 
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-  s4() + '-' + s4() + s4() + s4();
+    s4() + '-' + s4() + s4() + s4();
 }
 
 function generateClientTimestamp() {
@@ -100,10 +111,10 @@ function generateRandomString(len) {
   return text;
 }
 
-function prepareRequest(url, title, callback) {	
+function prepareRequest(url, title, callback) {
   chrome.storage.sync.get(function (stored) {
-    
-    var wfUrl = stored['sharedUrl'];  
+
+    var wfUrl = stored['sharedUrl'];
     const mostRecentOp = 586657536;
     const shareId = wfUrl.substr(wfUrl.lastIndexOf('/') + 1);
 
@@ -114,71 +125,71 @@ function prepareRequest(url, title, callback) {
     const crossCheckUserId = '901887';
 
     var jsonPacket = [
-    {
-      "most_recent_operation_transaction_id": mostRecentOp,
-      "operations": [
       {
-        "type": "create",
-        "data": {
-          "projectid": newGuid,
-          "parentid": "None",
-          "priority": priority
-        },
-        "client_timestamp": clientTimestamp,
-        "undo_data": {}
-      },
-      {
-        "type": "edit",
-        "data": {
-          "projectid": newGuid,
-          "name": content
-        },
-        "client_timestamp": clientTimestamp + 1,
-        "undo_data": {
-          "previous_last_modified": clientTimestamp,
-          "previous_name": ""
-        }
+        "most_recent_operation_transaction_id": mostRecentOp,
+        "operations": [
+          {
+            "type": "create",
+            "data": {
+              "projectid": newGuid,
+              "parentid": "None",
+              "priority": priority
+            },
+            "client_timestamp": clientTimestamp,
+            "undo_data": {}
+          },
+          {
+            "type": "edit",
+            "data": {
+              "projectid": newGuid,
+              "name": content
+            },
+            "client_timestamp": clientTimestamp + 1,
+            "undo_data": {
+              "previous_last_modified": clientTimestamp,
+              "previous_name": ""
+            }
+          }
+        ],
+        "share_id": shareId
       }
-      ],
-      "share_id": shareId
-    }
     ];
 
-    var form = new Object();
+    var form = {};
     form.client_id = new Date().toISOString();
     form.client_version = '15';
     form.push_poll_id = generateRandomString(8);
     form.push_poll_data = JSON.stringify(jsonPacket);
     form.share_id = shareId;
     form.crosscheck_user_id = crossCheckUserId;
-    
-    callback(form);  
+
+    callback(form);
   });
 }
 
-chrome.runtime.onInstalled.addListener(function() {
+chrome.runtime.onInstalled.addListener(function () {
   // Replace all rules ...
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
     // With a new rule ...
     chrome.declarativeContent.onPageChanged.addRules([
-    {
+      {
         // That fires when a page's URL contains a 'g' ...
         conditions: [
-        new chrome.declarativeContent.PageStateMatcher({
-          pageUrl: { urlMatches: '.*' },
-        })
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: {urlMatches: '.*'},
+          })
         ],
         // And shows the extension's page action.
-        actions: [ new chrome.declarativeContent.ShowPageAction() ]
+        actions: [new chrome.declarativeContent.ShowPageAction()]
       }
-      ]);
+    ]);
   });
 });
 
-chrome.pageAction.onClicked.addListener(function(tab) {
-  getCurrentTabInfo(function(url, title) {    
-    prepareRequest(url, title, function(data) {
-      sendData(data);    
-    });          
+chrome.pageAction.onClicked.addListener(function (tab) {
+  getCurrentTabInfo(function (url, title) {
+    prepareRequest(url, title, function (data) {
+      sendData(data);
+    });
   });
 });

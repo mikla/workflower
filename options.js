@@ -1,9 +1,11 @@
 // Saves options to chrome.storage
 function save_options() {
   var sharedUrl = document.getElementById('shared_url').value;
+
+  console.log(sharedUrl);
   
   chrome.storage.sync.set({
-    sharedUrl: sharedUrl,    
+    sharedUrl: sharedUrl
   }, function() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');

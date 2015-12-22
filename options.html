@@ -1,13 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><title>My Test Extension Options</title></head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflower settings</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link href='http://fonts.googleapis.com/css?family=Nunito:400,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="css/options.css">
+
+</head>
 <body>
 
-Worflowy shared page url: <input id="shared_url" />
-
 <div id="status"></div>
-<button id="save">Save</button>
+
+<form>
+    <h1>Settings</h1>
+    <fieldset>
+        <label for="shared_url">Workflowy shared item URL:</label>
+        <input type="text" id="shared_url" name="shared_url">
+    </fieldset>
+    <button id="save" type="button">Save</button>
+</form>
 
 <script src="options.js"></script>
+
 </body>
 </html>
