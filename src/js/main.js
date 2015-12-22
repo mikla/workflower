@@ -38,7 +38,7 @@ function showResult(text) {
     title: "Workflower",
     message: "Added to WF",
     priority: 0,
-    iconUrl: "icon.png"
+    iconUrl: "../img/icon.png"
   };
 
   chrome.notifications.create("wf_added_ntfn", opt);
